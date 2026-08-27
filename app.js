@@ -4,6 +4,11 @@ class Livro {
         this.autor = autor;
         this.paginas = paginas;
         this.quantidade = quantidade;
+        this.totalExemplares = quantidade;
+    }
+
+    quantidadeEmprestada() {
+        return this.totalExemplares - this.quantidade;
     }
 
     obterResumo() {
@@ -32,9 +37,13 @@ class Livro {
     }
 
     devolverEmprestimo() {
-        this.quantidade++;
-        return "Livro devolvido com sucesso!";
+        if (this.quantidade < this.totalExemplares) {
+            this.quantidade++;
+            return "Livro devolvido com sucesso!";
     }
+
+    return "Não há exemplar emprestado para devolver.";
+}
 }
 
 const livros = [
@@ -69,9 +78,32 @@ function listarTitulosDisponiveis(livros) {
 
 function calcularTotalExemplares(livros) {
     return livros.reduce((acumulador, livro) => {
+        return acumulador + livro.totalExemplares;
+    }, 0);
+}
+
+//Estamos aqui!
+function gerarRelatorioAcervo(livros) {
+    return `Total no acervo: ${calcularTotalExemplares(livros)}
+Disponíveis: ${calcularTotalDisponiveis(livros)}
+Emprestados: ${calcularTotalEmprestados(livros)}`;
+}
+
+
+
+function calcularTotalEmprestados(livros) {
+    return livros.reduce((acumulador, livro) => {
+        return acumulador + livro.quantidadeEmprestada();
+    }, 0);
+}
+
+
+function calcularTotalDisponiveis(livros) {
+    return livros.reduce((acumulador, livro) => {
         return acumulador + livro.quantidade;
     }, 0);
 }
+
 
 function listarLivrosPorAutor(livros, autorBusca) {
     return livros.filter(
@@ -87,12 +119,22 @@ function buscarLivrosPorTitulo(livros, busca) {
     );
 }
 
-//ESTOU AQUI
+
 function realizarEmprestimo(livros, tituloBusca) {
     const encontrarLivro = localizarLivro(livros, tituloBusca);
 
     if (encontrarLivro) {
         return encontrarLivro.fazerEmprestimo();
+    } else {
+        return "Livro não encontrado.";
+    }
+}
+
+function realizarDevolucao(livros, tituloBusca) {
+const encontrarLivro = localizarLivro(livros, tituloBusca);
+
+    if (encontrarLivro) {
+       return encontrarLivro.devolverEmprestimo();
     } else {
         return "Livro não encontrado.";
     }
@@ -112,36 +154,12 @@ const total = calcularTotalExemplares(livros);
 // =====================================
 // Simulação de uso do sistema
 // ======================================
-/*const livro = localizarLivro(livros, "1984");
 
-if (livro) {
-    console.log(livro.obterResumo());
+console.log(gerarRelatorioAcervo(livros));
 
-    console.log(livro.fazerEmprestimo());
+realizarEmprestimo(livros, "1984");
 
-    console.log(livro.obterResumo());
-} else {
-    console.log("Livro não encontrado.");
-}*/
-
-/*console.log(titulos);
-
-console.log(total);
-
-const livrosTolkien = listarLivrosPorAutor(
-    livros,
-    "J. R. R. Tolkien"
-);
-
-console.log(livrosTolkien);
+console.log(gerarRelatorioAcervo(livros));
 
 
-console.log(
-    listarLivrosPorAutor(livros, "Clarice Lispector")
-);*/
 
-console.log(realizarEmprestimo(livros, "1984"));
-
-console.log(realizarEmprestimo(livros, "1984"));
-
-console.log(realizarEmprestimo(livros, "Harry Potter"));
