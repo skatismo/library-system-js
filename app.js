@@ -46,6 +46,7 @@ class Livro {
 }
 }
 
+
 const livros = [
     new Livro("Dom Casmurro", "Machado de Assis", 184, 2),
     new Livro("1984", "George Orwell", 120, 1),
@@ -57,6 +58,93 @@ const livros = [
 // ======================================
 // Funções do sistema
 // ======================================
+ 
+//ESTAMOS AQUI!
+function removerExemplares(livros, tituloBusca, quantidade) {
+    const quantidadeInvalidaEx =
+        typeof quantidade !== "number" ||
+        !Number.isInteger(quantidade) ||
+        quantidade <= 0;
+
+    if (quantidadeInvalidaEx) {
+        return "Quantidade inválida.";
+    }
+
+    const livroParaEx = localizarLivro(livros, tituloBusca);
+
+    if (!livroParaEx) {
+        return "Livro não encontrado.";
+    }
+
+    const quantidadeSuperior = quantidade > livroParaEx.quantidade;   
+    
+    if (quantidadeSuperior) {
+            return "Quantidade indisponível para remoção.";
+    }
+
+
+    livroParaEx.totalExemplares -= quantidade;
+    livroParaEx.quantidade -= quantidade;
+
+    return "Exemplares removidos com sucesso!";
+}
+
+
+
+
+
+function adicionarExemplares(livros, tituloBusca, quantidade) {
+    const quantidadeInvalida =
+        typeof quantidade !== "number" ||
+        !Number.isInteger(quantidade) ||
+        quantidade <= 0;
+
+    if (quantidadeInvalida) {
+        return "Quantidade inválida.";
+    }
+
+    const livroParaAd = localizarLivro(livros, tituloBusca);
+
+    if (!livroParaAd) {
+        return "Livro não encontrado.";
+    }
+
+    livroParaAd.totalExemplares += quantidade;
+    livroParaAd.quantidade += quantidade;
+
+    return "Exemplares adicionados com sucesso!";
+}
+
+
+function removerLivro(livros, tituloBusca) {
+    const indice = livros.findIndex(
+        livro => livro.titulo === tituloBusca
+    )
+
+    if (indice !== -1) {
+        livros.splice(indice, 1);
+        return "Livro removido com sucesso!"
+    } else {
+        return "Livro não encontrado.";
+    }
+}
+
+
+
+
+function adicionarLivro(livros, livro) {
+    const livroExistente = localizarLivro(livros, livro.titulo)
+    if (livroExistente) {
+        return "Livro já cadastrado."
+    } else {
+        livros.push(livro);
+        return "Livro adicionado com sucesso!";
+    }
+}
+
+
+
+
 function localizarLivro(livros, tituloBusca) {
     return livros.find(
         livro => livro.titulo === tituloBusca
@@ -82,7 +170,6 @@ function calcularTotalExemplares(livros) {
     }, 0);
 }
 
-//Estamos aqui!
 function gerarRelatorioAcervo(livros) {
     return `Total no acervo: ${calcularTotalExemplares(livros)}
 Disponíveis: ${calcularTotalDisponiveis(livros)}
@@ -155,11 +242,35 @@ const total = calcularTotalExemplares(livros);
 // Simulação de uso do sistema
 // ======================================
 
-console.log(gerarRelatorioAcervo(livros));
 
-realizarEmprestimo(livros, "1984");
+const livroEmprestado = new Livro(
+    "Livro Emprestado",
+    "Autor Teste",
+    300,
+    5
+);
 
-console.log(gerarRelatorioAcervo(livros));
+livros.push(livroEmprestado);
+
+livroEmprestado.fazerEmprestimo();
+livroEmprestado.fazerEmprestimo();
+
+console.log(livroEmprestado);
+
+console.log(
+    removerExemplares(livros, "Livro Emprestado", 4)
+);
+
+console.log(livroEmprestado);
+
+console.log(
+    removerExemplares(livros, "Livro Emprestado", 2)
+);
+
+console.log(livroEmprestado);
+
+
+
 
 
 
