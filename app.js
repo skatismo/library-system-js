@@ -59,7 +59,88 @@ const livros = [
 // Funções do sistema
 // ======================================
  
-//ESTAMOS AQUI!
+function listarLivrosComEmprestimos(livros) {
+    return livros.filter(
+    livro => livro.quantidadeEmprestada() > 0
+);
+}
+
+
+function listarLivrosIndisponiveis(livros) {
+    return livros.filter(
+    livro => !livro.estaDisponivel()
+);
+}
+
+function gerarRelatorioPorAutor(livros, autorBusca) {
+    const buscaInvalida =
+        typeof autorBusca !== "string" ||
+        autorBusca.trim() ===  "";
+
+    if(buscaInvalida) {
+        return "Autor inválido.";
+    }
+
+    const autorNormalizada = autorBusca.trim().toLowerCase();
+    
+    const livrosDoAutor = livros.filter(
+        livro => livro.autor.toLowerCase() === autorNormalizada
+    );
+    
+    if (livrosDoAutor.length < 1) {
+        return "Autor não encontrado.";
+    }
+    const quantidadeTitulos = livrosDoAutor.length;
+
+    const totalExemplares = calcularTotalExemplares(livrosDoAutor);
+
+    const totalDisponiveis = calcularTotalDisponiveis(livrosDoAutor)
+
+    const totalEmprestados = calcularTotalEmprestados(livrosDoAutor)
+
+    return {
+        autor: livrosDoAutor[0].autor,
+        titulos: quantidadeTitulos,
+        totalExemplares: totalExemplares,
+        disponiveis: totalDisponiveis,
+        emprestados: totalEmprestados
+    };
+}    
+
+function buscarLivros(livros, termoBusca) {
+    const buscaInvalida =
+        typeof termoBusca !== "string" ||
+        termoBusca.trim() ===  "";
+
+    if(buscaInvalida) {
+        return "Termo de busca inválido.";
+    }
+
+    const termoNormalizado = termoBusca.trim().toLowerCase();
+
+    return livros.filter(
+        livro => livro.titulo.toLowerCase().includes(termoNormalizado)
+        ||
+        livro.autor.toLowerCase().includes(termoNormalizado)
+);
+}
+
+function listarLivrosPorAutor(livros, autorBusca) {
+    const buscaAutorNormalizada = autorBusca.toLowerCase();
+    
+    return livros.filter(
+        livro => livro.autor.toLowerCase().includes(buscaAutorNormalizada)
+    );
+}
+
+function buscarLivrosPorTitulo(livros, busca) {
+    const buscaTituloNormalizada = busca.toLowerCase();
+
+    return livros.filter(
+        livro => livro.titulo.toLowerCase().includes(buscaTituloNormalizada)
+    );
+}
+
 function removerExemplares(livros, tituloBusca, quantidade) {
     const quantidadeInvalidaEx =
         typeof quantidade !== "number" ||
@@ -89,10 +170,6 @@ function removerExemplares(livros, tituloBusca, quantidade) {
     return "Exemplares removidos com sucesso!";
 }
 
-
-
-
-
 function adicionarExemplares(livros, tituloBusca, quantidade) {
     const quantidadeInvalida =
         typeof quantidade !== "number" ||
@@ -115,7 +192,6 @@ function adicionarExemplares(livros, tituloBusca, quantidade) {
     return "Exemplares adicionados com sucesso!";
 }
 
-
 function removerLivro(livros, tituloBusca) {
     const indice = livros.findIndex(
         livro => livro.titulo === tituloBusca
@@ -129,9 +205,6 @@ function removerLivro(livros, tituloBusca) {
     }
 }
 
-
-
-
 function adicionarLivro(livros, livro) {
     const livroExistente = localizarLivro(livros, livro.titulo)
     if (livroExistente) {
@@ -141,9 +214,6 @@ function adicionarLivro(livros, livro) {
         return "Livro adicionado com sucesso!";
     }
 }
-
-
-
 
 function localizarLivro(livros, tituloBusca) {
     return livros.find(
@@ -176,36 +246,17 @@ Disponíveis: ${calcularTotalDisponiveis(livros)}
 Emprestados: ${calcularTotalEmprestados(livros)}`;
 }
 
-
-
 function calcularTotalEmprestados(livros) {
     return livros.reduce((acumulador, livro) => {
         return acumulador + livro.quantidadeEmprestada();
     }, 0);
 }
 
-
 function calcularTotalDisponiveis(livros) {
     return livros.reduce((acumulador, livro) => {
         return acumulador + livro.quantidade;
     }, 0);
 }
-
-
-function listarLivrosPorAutor(livros, autorBusca) {
-    return livros.filter(
-        livro => livro.autor === autorBusca
-    );
-}
-
-function buscarLivrosPorTitulo(livros, busca) {
-    const buscaNormalizada = busca.toLowerCase();
-
-    return livros.filter(
-        livro => livro.titulo.toLowerCase().includes(buscaNormalizada)
-    );
-}
-
 
 function realizarEmprestimo(livros, tituloBusca) {
     const encontrarLivro = localizarLivro(livros, tituloBusca);
@@ -227,50 +278,10 @@ const encontrarLivro = localizarLivro(livros, tituloBusca);
     }
 }
 
-
-
-
 const titulos = listarTitulosDisponiveis(livros);
 
 const total = calcularTotalExemplares(livros);
 
-
-
-
-
 // =====================================
 // Simulação de uso do sistema
 // ======================================
-
-
-const livroEmprestado = new Livro(
-    "Livro Emprestado",
-    "Autor Teste",
-    300,
-    5
-);
-
-livros.push(livroEmprestado);
-
-livroEmprestado.fazerEmprestimo();
-livroEmprestado.fazerEmprestimo();
-
-console.log(livroEmprestado);
-
-console.log(
-    removerExemplares(livros, "Livro Emprestado", 4)
-);
-
-console.log(livroEmprestado);
-
-console.log(
-    removerExemplares(livros, "Livro Emprestado", 2)
-);
-
-console.log(livroEmprestado);
-
-
-
-
-
-
